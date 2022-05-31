@@ -14,19 +14,20 @@ def approval_program():
     # maxAmount: if wallet reachs max amount algos will send to creator and smart contract will close
     Txn.accounts
     handle_creation = Seq(
-        App.globalPut(Bytes("creator"), Bytes("1")),
+        App.globalPut(Bytes("creator"), Txn.sender()),
         App.globalPut(Bytes("expiryDate"), Btoi(Txn.application_args[0])),
         App.globalPut(Bytes("minAmount"), Btoi(Txn.application_args[1])),
         App.globalPut(Bytes("maxAmount"), Btoi(Txn.application_args[2]))
     )
 
-    on_donate = Seq(
-        unsigned_txn = PaymentTxn(Txn.sender(), params, receiver, 1000000, None, note)
-    )
-
     program = Cond(
         [Txn.application_id() == Int(0), handle_creation],
-        [Txn.application_args[0] == Bytes("donate"), on_donate]
+        [Txn.on_completion() == OnComplete.NoOp, Reject()],
+        [Txn.on_completion() == OnComplete.OptIn, Reject()],
+        [Txn.on_completion() == OnComplete.CloseOut, Reject()],
+        [Txn.on_completion() == OnComplete.UpdateApplication, Reject()],
+        [Txn.on_completion() == OnComplete.DeleteApplication, Reject()],
+        #[Txn.application_args[0] == Bytes("donate"), on_donate]
     )
 
     logging.debug("Approval Program")
