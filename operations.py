@@ -21,8 +21,10 @@ algod_address = "http://localhost:4001"
 algod_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
 contract_address = str(
-    "FHQPLJVRO7FVHYKCA2SGR3I7ZHHKHAQS4AGOAVGGGJQJYTTBVEJUGHN5JQ")
+    "2B3I4PZIAH7N6PEQANWHZRALX35SRWNHULIVYEB335VW7X3PKW4CTBYFPY")
 testnet_gh = "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+
+app_id = 4
 
 
 def getContracts(client: AlgodClient) -> Tuple[bytes, bytes]:
@@ -107,7 +109,23 @@ def fundPool(client: AlgodClient, sender: Account, amount: int):
         account_info.get('amount')) + "\n")
 
 
+def withdrawFunds(client: AlgodClient, sender: Account):
+    withdrawTxn = transaction.ApplicationCallTxn(
+        sender=sender.getAddress(),
+        index=app_id,
+        on_complete=transaction.OnComplete.NoOpOC,
+        app_args=[b"withdraw"],
+        sp=client.suggested_params(),
+    )
+
+    signedTxn = withdrawTxn.sign(sender.getPrivateKey())
+    client.send_transaction(signedTxn)
+
+    waitForTransaction(client, signedTxn.get_txid())
+
 # utility for waiting on a transaction confirmation
+
+
 def wait_for_confirmation(client, transaction_id, timeout):
     """
     Wait until the transaction is confirmed or rejected, or until 'timeout'
@@ -138,8 +156,8 @@ def wait_for_confirmation(client, transaction_id, timeout):
         'pending tx not found in timeout rounds, timeout value = : {}'.format(timeout))
 
 
-#_mnemonic = "chunk top humor ski derive outdoor dice library brush spoon twin surface rescue surprise kite climb space code color employ garden peace chuckle ability junior"
-_mnemonic = "roof depth upon brick organ panther panther plug permit original acoustic pottery call edge sheriff private clean error tobacco volcano found step present ability trap"
+_mnemonic = "chunk top humor ski derive outdoor dice library brush spoon twin surface rescue surprise kite climb space code color employ garden peace chuckle ability junior"
+#_mnemonic = "roof depth upon brick organ panther panther plug permit original acoustic pottery call edge sheriff private clean error tobacco volcano found step present ability trap"
 client = AlgodClient(algod_token, algod_address)
 #pKey = Account.FromMnemonic(_mnemonic)[0]
 user = Account.FromMnemonic(_mnemonic)
@@ -147,4 +165,5 @@ user = Account.FromMnemonic(_mnemonic)
 #createDonationPool(client, user, 5000, 1000000)
 # getContracts(client)
 
-fundPool(client, user, 6051001)
+#fundPool(client, user, 6051001)
+withdrawFunds(client, user)

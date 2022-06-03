@@ -7,6 +7,9 @@ from logging import *
 
 # Txn.application_args are setted on creation transaction call
 
+contract_address_2 = str(
+    "2B3I4PZIAH7N6PEQANWHZRALX35SRWNHULIVYEB335VW7X3PKW4CTBYFPY")
+
 
 def approval_program():
     # creator: donation creator
@@ -20,9 +23,28 @@ def approval_program():
         Approve()
     )
 
+    withdraw = Seq(
+        #Assert(Bytes(App.globalGet("creator")) == Bytes(Txn.sender())),
+        InnerTxnBuilder.Begin(),
+        InnerTxnBuilder.SetFields(
+            {
+                TxnField.type_enum: TxnType.Payment,
+                TxnField.amount: Int(5000),
+                TxnField.receiver: Txn.sender()
+            }
+        ),
+        InnerTxnBuilder.Submit(),
+        Approve(),
+
+    )
+
+    handle_noop = Cond(
+        [Txn.application_args[0] == Bytes("withdraw"), withdraw]
+    )
+
     program = Cond(
         [Txn.application_id() == Int(0), handle_creation],
-        [Txn.on_completion() == OnComplete.NoOp, Reject()],
+        [Txn.on_completion() == OnComplete.NoOp, handle_noop],
         [Txn.on_completion() == OnComplete.OptIn, Approve()],
         [Txn.on_completion() == OnComplete.CloseOut, Reject()],
         [Txn.on_completion() == OnComplete.UpdateApplication, Reject()],
