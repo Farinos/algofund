@@ -156,14 +156,15 @@ def wait_for_confirmation(client, transaction_id, timeout):
         'pending tx not found in timeout rounds, timeout value = : {}'.format(timeout))
 
 
-_mnemonic = "chunk top humor ski derive outdoor dice library brush spoon twin surface rescue surprise kite climb space code color employ garden peace chuckle ability junior"
-#_mnemonic = "roof depth upon brick organ panther panther plug permit original acoustic pottery call edge sheriff private clean error tobacco volcano found step present ability trap"
-client = AlgodClient(algod_token, algod_address)
-#pKey = Account.FromMnemonic(_mnemonic)[0]
-user = Account.FromMnemonic(_mnemonic)
-
-#createDonationPool(client, user, 5000, 1000000)
-# getContracts(client)
-
-#fundPool(client, user, 6051001)
-withdrawFunds(client, user)
+if __name__ == '__main__':
+    _mnemonic = "chunk top humor ski derive outdoor dice library brush spoon twin surface rescue surprise kite climb space code color employ garden peace chuckle ability junior"
+    #_mnemonic = "roof depth upon brick organ panther panther plug permit original acoustic pottery call edge sheriff private clean error tobacco volcano found step present ability trap"
+    client = AlgodClient(algod_token, algod_address)
+    #pKey = Account.FromMnemonic(_mnemonic)[0]
+    user = Account.FromMnemonic(_mnemonic)
+    
+    #createDonationPool(client, user, 5000, 1000000)
+    # getContracts(client)
+    
+    #fundPool(client, user, 6051001)
+    withdrawFunds(client, user)

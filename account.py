@@ -1,8 +1,5 @@
 from algosdk import account, mnemonic
 
-_mnemonic = "blanket cruise impose property thing fatal exhaust salad ship frozen similar mesh term noise coral nest cool just stool cream whisper poet box ability true"
-
-
 class Account:
     """Represents a private key and address for an Algorand account"""
 
@@ -24,5 +21,7 @@ class Account:
         return cls(mnemonic.to_private_key(m))
 
 
-addr = Account.FromMnemonic(_mnemonic)
-print(addr)
+if __name__ == '__main__':
+    _mnemonic = "blanket cruise impose property thing fatal exhaust salad ship frozen similar mesh term noise coral nest cool just stool cream whisper poet box ability true"
+    addr = Account.FromMnemonic(_mnemonic)
+    print(addr)
