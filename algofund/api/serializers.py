@@ -5,4 +5,4 @@ from rest_framework import serializers
 class PoolSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Pool
-        fields = ('name', 'description', 'applicationIndex', 'image')
+        fields = ('id', 'name', 'description', 'applicationIndex', 'image')

@@ -9,7 +9,7 @@ class Pool(models.Model):
     # smart contract id
     applicationIndex = models.CharField(max_length=200)
     # pip install Pillow to use ImageField
-    image = models.ImageField(upload_to='pools')
+    image = models.ImageField(upload_to='media')
 
     def __str__(self) -> str:
         return f'Name: {self.name} AppIndex: {self.applicationIndex}'

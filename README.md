@@ -76,3 +76,10 @@ INSTALLED_APPS = [
 ]
 ```
 - create `serializers.py` inside `api` folder, here we need to create the serializer
+- create a serializer class inside `api/views.py` file
+- `router` imported from `rest_framework` is responsible of dinamically routing requests to the right resource in a dinamic way, so if we add or delete items from the db the URLs will update to match. A router works with a `viewset` to dinamically route requests.  
+
+# TODO
+
+- invoke algo functions on post fund, pool and get funds
+- fix image retrieval broken link
