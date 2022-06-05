@@ -16,6 +16,8 @@ Execute sandbox containers with private network with following command:
 - create your venv named **algofund-venv** `python -m venv algofund-venv`
 - activate your venv with `source algofund-venv/bin/activate`
 - install all the project dependencies with `pip install -r requirements.txt`
+- go to algofund directory `cd algofund`
+- run the server `python manage.py runserver`
 
 Admin info:
 ```
