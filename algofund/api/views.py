@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from .apps import ApiConfig
+
 from .serializers import PoolSerializer
 from .models import Pool
 from rest_framework import viewsets
@@ -8,3 +10,8 @@ from rest_framework import viewsets
 class PoolViewSet(viewsets.ModelViewSet):
     queryset = Pool.objects.all().order_by('name')
     serializer_class = PoolSerializer
+
+    def create(self, request, *args, **kwargs):
+        #createDonationPool()
+        print(ApiConfig.client.account_application_info)
+        return super().create(request, *args, **kwargs)

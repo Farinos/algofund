@@ -84,4 +84,3 @@ INSTALLED_APPS = [
 # TODO
 
 - invoke algo functions on post fund, pool and get funds
-- fix image retrieval broken link
