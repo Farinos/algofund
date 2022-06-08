@@ -85,7 +85,7 @@ INSTALLED_APPS = [
 
 - invoke algo functions on post fund, pool and get funds
 
-# PRESENTATION
+# FINAL PRESENTATION
 
 - struttura del progetto
 - webapp e tutto in localhost
