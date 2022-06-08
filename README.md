@@ -84,3 +84,10 @@ INSTALLED_APPS = [
 # TODO
 
 - invoke algo functions on post fund, pool and get funds
+
+# PRESENTATION
+
+- struttura del progetto
+- webapp e tutto in localhost
+- README.md
+- 1 smart contract per ogni pool

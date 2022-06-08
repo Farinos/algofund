@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from .apps import ApiConfig
 
 from .serializers import PoolSerializer
