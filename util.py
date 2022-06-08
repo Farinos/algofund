@@ -2,8 +2,10 @@ from typing import List, Tuple, Dict, Any, Optional, Union
 from base64 import b64decode
 
 from algosdk.v2client.algod import AlgodClient
-from algosdk import encoding
 
+from algosdk import encoding, kmd, mnemonic, constants
+from algosdk.wallet import Wallet
+from account import *
 from pyteal import compileTeal, Mode, Expr
 
 
@@ -12,21 +14,18 @@ class PendingTxnResponse:
         self.poolError: str = response["pool-error"]
         self.txn: Dict[str, Any] = response["txn"]
 
-        self.applicationIndex: Optional[int] = response.get(
-            "application-index")
+        self.applicationIndex: Optional[int] = response.get("application-index")
         self.assetIndex: Optional[int] = response.get("asset-index")
         self.closeRewards: Optional[int] = response.get("close-rewards")
         self.closingAmount: Optional[int] = response.get("closing-amount")
         self.confirmedRound: Optional[int] = response.get("confirmed-round")
-        self.globalStateDelta: Optional[Any] = response.get(
-            "global-state-delta")
+        self.globalStateDelta: Optional[Any] = response.get("global-state-delta")
         self.localStateDelta: Optional[Any] = response.get("local-state-delta")
         self.receiverRewards: Optional[int] = response.get("receiver-rewards")
         self.senderRewards: Optional[int] = response.get("sender-rewards")
 
         self.innerTxns: List[Any] = response.get("inner-txns", [])
-        self.logs: List[bytes] = [b64decode(l)
-                                  for l in response.get("logs", [])]
+        self.logs: List[bytes] = [b64decode(l) for l in response.get("logs", [])]
 
 
 def fullyCompileContract(client: AlgodClient, contract: Expr) -> bytes:
@@ -58,3 +57,51 @@ def waitForTransaction(
     raise Exception(
         "Transaction {} not confirmed after {} rounds".format(txID, timeout)
     )
+
+
+def key_management():
+    kmd_address = "http://localhost:4002"
+    kmd_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    kmd_client = kmd.KMDClient(kmd_token, kmd_address)
+    return kmd_client
+
+
+def wallet_details():
+    wallet_name = "unencrypted-default-wallet"
+    password = ""
+    kmd_client = key_management()
+    return Wallet(wallet_name, password, kmd_client)
+
+
+def testMnemonic():
+    walletid = None
+    accountArray = []
+
+    wallet = wallet_details()
+
+    for key in wallet.list_keys():
+        walletid = wallet.kcl.list_wallets()[0].get("id")
+
+        wallethandle = wallet.kcl.init_wallet_handle(walletid, "")
+        accountkey = wallet.kcl.export_key(wallethandle, "", key)
+        mn = mnemonic.from_private_key(accountkey)
+        account = Account.FromMnemonic(mn)
+        accountArray.append(account)
+        print("Account Mnemonic: ", mn)
+
+    return accountArray
+
+
+def get_application_address(appID: int) -> str:
+    """
+    Return the escrow address of an application.
+
+    Args:
+        appID (int): The ID of the application.
+
+    Returns:
+        str: The address corresponding to that application's escrow account.
+    """
+    to_sign = constants.APPID_PREFIX + appID.to_bytes(8, "big")
+    checksum = encoding.checksum(to_sign)
+    return encoding.encode_address(checksum)
