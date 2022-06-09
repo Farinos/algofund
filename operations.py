@@ -19,11 +19,11 @@ CLEAR_STATE_PROGRAM = b""
 
 algod_address = "http://localhost:4001"
 algod_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-
-contract_address = str("2B3I4PZIAH7N6PEQANWHZRALX35SRWNHULIVYEB335VW7X3PKW4CTBYFPY")
+contract_address = "WKQ64D7YMYZUUUU7RHDCPSHZX7QM63TS2PZ32IM55Y4FEUIAYKHWFJRSLA"
+# contract_address = str("2B3I4PZIAH7N6PEQANWHZRALX35SRWNHULIVYEB335VW7X3PKW4CTBYFPY")
 testnet_gh = "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
 
-app_id = 4
+app_id = 26
 
 
 def getContracts(client: AlgodClient) -> Tuple[bytes, bytes]:
@@ -97,7 +97,7 @@ def fundPool(client: AlgodClient, sender: Account, amount: int):
 
     # wait for confirmation
     try:
-        confirmed_txn = wait_for_confirmation(client, txid, 4)
+        confirmed_txn = wait_for_confirmation(client, txid, 1)
     except Exception as err:
         print(err)
         return
@@ -163,14 +163,14 @@ if __name__ == "__main__":
     # pKey = Account.FromMnemonic(_mnemonic)[0]
     user = Account.FromMnemonic(_mnemonic)
 
-    # createDonationPool(client, user, 5000, 1000000)
-    adrs = get_application_address(1)
-    print(adrs)
+    # createDonationPool(client, user, 5000, 1000001)
+    # adrs = get_application_address(1)
+    # print(adrs)
     # getContracts(client)
     # wlt = wallet_details()
     # print(wlt)
     # accnts = testMnemonic()
 
     # print(accnts)
-    # fundPool(client, user, 6051001)
-    # withdrawFunds(client, user)
+    # fundPool(client, user, 56051001)
+    withdrawFunds(client, user)
