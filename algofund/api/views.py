@@ -1,4 +1,4 @@
-from algofund.account import Account
+from account import Account
 from operations import createDonationPool
 from .apps import ApiConfig
 
@@ -9,15 +9,22 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-# Create your views here.
+# Create api view with customizable json
 @api_view(['POST'])
-def post_pool(request):
+def list_pool(request):
+    if request.method == 'GET':
+        pools = Pool.objects.all().order_by('name')
+        serializer = PoolSerializer(pools, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     if request.method == 'POST':
         serializer = PoolSerializer(data=request.data)
-        mnemonic = request.data['creator_mnemonic']
-        print(request.data['creator_mnemonic'])
+        mnemonic = request.data['creatorMnemonic']
         if serializer.is_valid():
-            createDonationPool(ApiConfig.client, Account.FromMnemonic(mnemonic))
+            poolData = request.data
+            smartContractAddr = createDonationPool(ApiConfig.client, Account.FromMnemonic(mnemonic), poolData['minAmount'], poolData['expiryTime'].timestamp())
+            poolData['applicationIndex'] = smartContractAddr
+            serializer = PoolSerializer(data=poolData)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
