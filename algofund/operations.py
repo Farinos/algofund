@@ -10,7 +10,7 @@ from pyteal import Txn, compileTeal, Mode
 
 from account import Account
 from contract import approval_program, clear_state_program
-from util import fullyCompileContract, waitForTransaction
+from util import fullyCompileContract, testMnemonic, waitForTransaction, wallet_details
 from datetime import date
 from algosdk.transaction import PaymentTxn
 
@@ -19,12 +19,11 @@ CLEAR_STATE_PROGRAM = b""
 
 algod_address = "http://localhost:4001"
 algod_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-
-contract_address = str(
-    "2B3I4PZIAH7N6PEQANWHZRALX35SRWNHULIVYEB335VW7X3PKW4CTBYFPY")
+contract_address = "WKQ64D7YMYZUUUU7RHDCPSHZX7QM63TS2PZ32IM55Y4FEUIAYKHWFJRSLA"
+# contract_address = str("2B3I4PZIAH7N6PEQANWHZRALX35SRWNHULIVYEB335VW7X3PKW4CTBYFPY")
 testnet_gh = "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
 
-app_id = 4
+app_id = 26
 
 
 def getContracts(client: AlgodClient) -> Tuple[bytes, bytes]:
@@ -34,17 +33,13 @@ def getContracts(client: AlgodClient) -> Tuple[bytes, bytes]:
 
     if len(APPROVAL_PROGRAM) == 0:
         APPROVAL_PROGRAM = fullyCompileContract(client, approval_program())
-        CLEAR_STATE_PROGRAM = fullyCompileContract(
-            client, clear_state_program())
+        CLEAR_STATE_PROGRAM = fullyCompileContract(client, clear_state_program())
 
     return APPROVAL_PROGRAM, CLEAR_STATE_PROGRAM
 
 
 def createDonationPool(
-    client: AlgodClient,
-    sender: Account,
-    minAmount: int,
-    expiryTime: int
+    client: AlgodClient, sender: Account, minAmount: int, expiryTime: int
 ) -> int:
 
     approval, clear = getContracts(client)
@@ -53,11 +48,7 @@ def createDonationPool(
     globalSchema = transaction.StateSchema(num_uints=2, num_byte_slices=1)
     localSchema = transaction.StateSchema(num_uints=0, num_byte_slices=0)
 
-    app_args = [
-        senderAddress,
-        minAmount,
-        expiryTime
-    ]
+    app_args = [senderAddress, minAmount, expiryTime]
 
     txn = transaction.ApplicationCreateTxn(
         sender=senderAddress,
@@ -67,7 +58,7 @@ def createDonationPool(
         global_schema=globalSchema,
         local_schema=localSchema,
         app_args=app_args,
-        sp=client.suggested_params()
+        sp=client.suggested_params(),
     )
 
     signedTxn = txn.sign(sender.getPrivateKey())
@@ -81,7 +72,7 @@ def createDonationPool(
 
 def fundPool(client: AlgodClient, sender: Account, amount: int):
     account_info = client.account_info(sender.addr)
-    print("Account balance: {} microAlgos".format(account_info.get('amount')))
+    print("Account balance: {} microAlgos".format(account_info.get("amount")))
 
     params = client.suggested_params()
     # comment out the next two (2) lines to use suggested fees
@@ -90,8 +81,15 @@ def fundPool(client: AlgodClient, sender: Account, amount: int):
 
     note = "Hello World".encode()
 
-    unsigned_txn = PaymentTxn(sender.getAddress(), first=params.first, last=params.last,
-                              gh=params.gh, receiver=contract_address, fee=params.fee * 2, amt=amount)
+    unsigned_txn = PaymentTxn(
+        sender.getAddress(),
+        first=params.first,
+        last=params.last,
+        gh=params.gh,
+        receiver=contract_address,
+        fee=params.fee * 2,
+        amt=amount,
+    )
     signed_txn = unsigned_txn.sign(sender.getPrivateKey())
 
     txid = client.send_transaction(signed_txn)
@@ -99,14 +97,15 @@ def fundPool(client: AlgodClient, sender: Account, amount: int):
 
     # wait for confirmation
     try:
-        confirmed_txn = wait_for_confirmation(client, txid, 4)
+        confirmed_txn = wait_for_confirmation(client, txid, 1)
     except Exception as err:
         print(err)
         return
 
     account_info = client.account_info(contract_address)
-    print("Final Account balance: {} microAlgos".format(
-        account_info.get('amount')) + "\n")
+    print(
+        "Final Account balance: {} microAlgos".format(account_info.get("amount")) + "\n"
+    )
 
 
 def withdrawFunds(client: AlgodClient, sender: Account):
@@ -123,6 +122,7 @@ def withdrawFunds(client: AlgodClient, sender: Account):
 
     waitForTransaction(client, signedTxn.get_txid())
 
+
 # utility for waiting on a transaction confirmation
 
 
@@ -132,7 +132,7 @@ def wait_for_confirmation(client, transaction_id, timeout):
     number of rounds have passed.
     Args:
         transaction_id (str): the transaction to wait for
-        timeout (int): maximum number of rounds to wait    
+        timeout (int): maximum number of rounds to wait
     Returns:
         dict: pending transaction information, or throws an error if the transaction
             is not confirmed or rejected in the next timeout rounds
@@ -148,23 +148,29 @@ def wait_for_confirmation(client, transaction_id, timeout):
         if pending_txn.get("confirmed-round", 0) > 0:
             return pending_txn
         elif pending_txn["pool-error"]:
-            raise Exception(
-                'pool error: {}'.format(pending_txn["pool-error"]))
+            raise Exception("pool error: {}".format(pending_txn["pool-error"]))
         client.status_after_block(current_round)
         current_round += 1
     raise Exception(
-        'pending tx not found in timeout rounds, timeout value = : {}'.format(timeout))
+        "pending tx not found in timeout rounds, timeout value = : {}".format(timeout)
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _mnemonic = "chunk top humor ski derive outdoor dice library brush spoon twin surface rescue surprise kite climb space code color employ garden peace chuckle ability junior"
-    #_mnemonic = "roof depth upon brick organ panther panther plug permit original acoustic pottery call edge sheriff private clean error tobacco volcano found step present ability trap"
+    # _mnemonic = "roof depth upon brick organ panther panther plug permit original acoustic pottery call edge sheriff private clean error tobacco volcano found step present ability trap"
     client = AlgodClient(algod_token, algod_address)
-    #pKey = Account.FromMnemonic(_mnemonic)[0]
+    # pKey = Account.FromMnemonic(_mnemonic)[0]
     user = Account.FromMnemonic(_mnemonic)
-    
-    #createDonationPool(client, user, 5000, 1000000)
+
+    # createDonationPool(client, user, 5000, 1000001)
+    # adrs = get_application_address(1)
+    # print(adrs)
     # getContracts(client)
-    
-    #fundPool(client, user, 6051001)
+    # wlt = wallet_details()
+    # print(wlt)
+    # accnts = testMnemonic()
+
+    # print(accnts)
+    # fundPool(client, user, 56051001)
     withdrawFunds(client, user)
