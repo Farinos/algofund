@@ -91,3 +91,15 @@ INSTALLED_APPS = [
 - webapp e tutto in localhost
 - README.md
 - 1 smart contract per ogni pool
+
+# TEST
+
+```json
+{
+"name":"test",
+"description":"test using pool",
+"minAmount":"",
+"expiryTime":"",
+"creator_mnemonic":"blanket cruise impose property thing fatal exhaust salad ship frozen similar mesh term noise coral nest cool just stool cream whisper poet box ability true",
+}
+```
