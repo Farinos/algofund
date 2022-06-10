@@ -96,10 +96,21 @@ INSTALLED_APPS = [
 
 ```json
 {
-"name":"test",
-"description":"test using pool",
-"minAmount":"",
-"expiryTime":"",
-"creator_mnemonic":"blanket cruise impose property thing fatal exhaust salad ship frozen similar mesh term noise coral nest cool just stool cream whisper poet box ability true",
+    "name": "test11",
+    "description": "fedwsfwfew",
+    "applicationIndex": "23232543453453453452",
+    "minAmount": 300,
+    "expiryTime": "2022-06-23",
+    "creatorMnemonic": "fine april congress twelve cave welcome slogan salt nice domain camp excuse door wool secret toss tell brush chicken chief swear sorry awkward above deposit"
 }
+```
+
+# Algorand commands
+
+```shell
+./sandbox up dev # start Algorand containers with dev data
+./sandbox goal account list
+./sandbox goal account balance -a <wallet-address> # show balance of person/contract
+./sandbox goal app read --app-id <smartContractApplicationIndex> -d data  
+./sandbox goal account export -a <wallet-address> # export mnemonic
 ```
