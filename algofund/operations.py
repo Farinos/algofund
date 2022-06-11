@@ -19,11 +19,11 @@ CLEAR_STATE_PROGRAM = b""
 
 algod_address = "http://localhost:4001"
 algod_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-contract_address = "WKQ64D7YMYZUUUU7RHDCPSHZX7QM63TS2PZ32IM55Y4FEUIAYKHWFJRSLA"
+contract_address = "TBXCKFOFZWMTTB3MJOZGECCJDIGIJW2E3QTLJV2SP5GOGEPTOZY4UH562M"
 # contract_address = str("2B3I4PZIAH7N6PEQANWHZRALX35SRWNHULIVYEB335VW7X3PKW4CTBYFPY")
 testnet_gh = "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
 
-app_id = 26
+app_id = 33
 
 
 def getContracts(client: AlgodClient) -> Tuple[bytes, bytes]:
@@ -163,7 +163,7 @@ if __name__ == "__main__":
     # pKey = Account.FromMnemonic(_mnemonic)[0]
     user = Account.FromMnemonic(_mnemonic)
 
-    # createDonationPool(client, user, 5000, 1000001)
+    # createDonationPool(client, user, 1000000, 1000003)
     # adrs = get_application_address(1)
     # print(adrs)
     # getContracts(client)
@@ -172,5 +172,5 @@ if __name__ == "__main__":
     # accnts = testMnemonic()
 
     # print(accnts)
-    # fundPool(client, user, 56051001)
+    # fundPool(client, user, 1000000)
     withdrawFunds(client, user)

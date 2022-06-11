@@ -25,19 +25,28 @@ def approval_program():
         Approve(),
     )
 
+    @Subroutine(TealType.none)
+    def withdraw():
+        return Seq(
+            InnerTxnBuilder.Begin(),
+            InnerTxnBuilder.SetFields(
+                {
+                    TxnField.type_enum: TxnType.Payment,
+                    TxnField.amount: Balance(Global.current_application_address())
+                    - Global.min_txn_fee(),
+                    TxnField.receiver: Txn.sender(),
+                }
+            ),
+            InnerTxnBuilder.Submit(),
+            Approve(),
+        )
+
     withdraw = Seq(
         Assert(Global.creator_address() == Txn.sender()),
-        InnerTxnBuilder.Begin(),
-        InnerTxnBuilder.SetFields(
-            {
-                TxnField.type_enum: TxnType.Payment,
-                TxnField.amount: Balance(Global.current_application_address())
-                - Global.min_txn_fee(),
-                TxnField.receiver: Txn.sender(),
-            }
-        ),
-        InnerTxnBuilder.Submit(),
-        Approve(),
+        If(
+            Balance(Global.current_application_address()) >= App.globalGet(minAmount)
+        ).Then(withdraw()),
+        Reject(),
     )
 
     handle_noop = Cond([Txn.application_args[0] == Bytes("withdraw"), withdraw])
