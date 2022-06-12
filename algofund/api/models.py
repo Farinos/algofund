@@ -16,3 +16,5 @@ class Pool(models.Model):
 
     def __str__(self) -> str:
         return f'Name: {self.name} AppIndex: {self.applicationIndex}'
+
+#class Fund()

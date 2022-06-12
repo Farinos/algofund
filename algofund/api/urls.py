@@ -10,5 +10,7 @@ router.register(r'pools-viewset', views.PoolViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('pools/', views.list_pool),
+    path('pools/<int:pk>', views.pool_details),
+    path('pools/<int:pk>/funds', views.pool_funds),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

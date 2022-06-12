@@ -30,6 +30,28 @@ def list_pool(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET',])
+def pool_details(request, pk):
+    try:
+        pool = Pool.objects.get(pk=pk)
+    except Pool.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = PoolSerializer(pool)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def pool_funds(request, pk):
+    try:
+        pool = Pool.objects.get(pk=pk)
+    except Pool.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'POST':
+        # TODO: send funds to pool (without storing model inside local db)
+        return Response()
+
 # ModelViewSet is a special view provided by Django Rest Framework that handles GET and POST for Pools
 class PoolViewSet(viewsets.ModelViewSet):
     queryset = Pool.objects.all().order_by('name')

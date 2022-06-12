@@ -70,7 +70,7 @@ def createDonationPool(
     return response.applicationIndex
 
 
-def fundPool(client: AlgodClient, sender: Account, amount: int):
+def fundPool(client: AlgodClient, sender: Account, contractAddr: str, amount: int):
     account_info = client.account_info(sender.addr)
     print("Account balance: {} microAlgos".format(account_info.get("amount")))
 
@@ -79,14 +79,12 @@ def fundPool(client: AlgodClient, sender: Account, amount: int):
     params.flat_fee = True
     params.fee = 1000
 
-    note = "Hello World".encode()
-
     unsigned_txn = PaymentTxn(
         sender.getAddress(),
         first=params.first,
         last=params.last,
         gh=params.gh,
-        receiver=contract_address,
+        receiver=contractAddr,
         fee=params.fee * 2,
         amt=amount,
     )
@@ -97,15 +95,10 @@ def fundPool(client: AlgodClient, sender: Account, amount: int):
 
     # wait for confirmation
     try:
-        confirmed_txn = wait_for_confirmation(client, txid, 1)
+        return wait_for_confirmation(client, txid, 2)
     except Exception as err:
         print(err)
-        return
-
-    account_info = client.account_info(contract_address)
-    print(
-        "Final Account balance: {} microAlgos".format(account_info.get("amount")) + "\n"
-    )
+        return None
 
 
 def withdrawFunds(client: AlgodClient, sender: Account):
