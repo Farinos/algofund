@@ -17,4 +17,7 @@ class Pool(models.Model):
     def __str__(self) -> str:
         return f'Name: {self.name} AppIndex: {self.applicationIndex}'
 
-#class Fund()
+class Fund(models.Model):
+    '''Class representing funding for a pool'''
+    senderMnemonic = models.CharField(max_length=200)
+    amount = models.IntegerField(default=100)

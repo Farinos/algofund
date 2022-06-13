@@ -1,13 +1,16 @@
 from account import Account
-from operations import createDonationPool
+from util import get_application_address
+from operations import createDonationPool, fundPool
 from .apps import ApiConfig
 
-from .serializers import PoolSerializer
+from .serializers import FundSerializer, PoolSerializer
 from .models import Pool
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
+from datetime import datetime
 
 # Create api view with customizable json
 @api_view(['GET','POST'])
@@ -22,7 +25,8 @@ def list_pool(request):
         mnemonic = request.data['creatorMnemonic']
         if serializer.is_valid():
             poolData = request.data
-            smartContractAddr = createDonationPool(ApiConfig.client, Account.FromMnemonic(mnemonic), poolData['minAmount'], 1655303133)#poolData['expiryTime'].timestamp())
+            expiryTimestamp = int(datetime.strptime(poolData['expiryTime'], '%Y-%m-%d').timestamp())
+            smartContractAddr = createDonationPool(ApiConfig.client, Account.FromMnemonic(mnemonic), poolData['minAmount'], expiryTimestamp)
             poolData['applicationIndex'] = smartContractAddr
             serializer = PoolSerializer(data=poolData)
             serializer.is_valid()
@@ -43,15 +47,22 @@ def pool_details(request, pk):
 
 @api_view(['POST'])
 def pool_funds(request, pk):
+    pool: Pool
     try:
         pool = Pool.objects.get(pk=pk)
     except Pool.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == 'POST':
-        # TODO: send funds to pool (without storing model inside local db)
-        return Response()
+        serializer = FundSerializer(data=request.data)
+        if serializer.is_valid():
+            senderMnemonic = request.data['senderMnemonic']
+            amount = int(request.data['amount'])
+            if fundPool(ApiConfig.client, Account.FromMnemonic(senderMnemonic), get_application_address(int(pool.applicationIndex)), amount) == None: return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# ONLY FOR TEST purposes
 # ModelViewSet is a special view provided by Django Rest Framework that handles GET and POST for Pools
 class PoolViewSet(viewsets.ModelViewSet):
     queryset = Pool.objects.all().order_by('name')
