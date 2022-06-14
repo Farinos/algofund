@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Crowdfunging pools</title>
+</head>
+
+<body>
+    <h1>Pools</h1>
+    <ul>
+        {% for pool in pools %}
+        <li>
+            <a href="{% url 'pool' pool.id %}">
+                Pool {{ pool.id }}: {{ pool.applicationIndex}}
+            </a>
+            <div>image {{pool.image}}</div>
+            <img src="/media/{{pool.image}}"/>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>

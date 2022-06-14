@@ -12,5 +12,7 @@ urlpatterns = [
     path('pools/', views.list_pool),
     path('pools/<int:pk>', views.pool_details),
     path('pools/<int:pk>/funds', views.pool_funds),
+    path('test', views.pools, name="pools"),
+    path('test/<int:pool_id>', views.pool, name="pool"),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

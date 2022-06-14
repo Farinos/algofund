@@ -10,6 +10,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from django.http import Http404
+from django.shortcuts import render
+
 from datetime import datetime
 
 # Create api view with customizable json
@@ -61,6 +64,20 @@ def pool_funds(request, pk):
             if fundPool(ApiConfig.client, Account.FromMnemonic(senderMnemonic), get_application_address(int(pool.applicationIndex)), amount) == None: return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response(status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def pools(request):
+    return render(request, "pools/pools.html", {
+        "pools": Pool.objects.all()
+    })
+
+def pool(request, pool_id):
+    try:
+        pool = Pool.objects.get(id=pool_id)
+    except Pool.DoesNotExist:
+        raise Http404("Pool not found.")
+    return render(request, "pools/pool.html", {
+        "pool": pool
+    })
 
 # ONLY FOR TEST purposes
 # ModelViewSet is a special view provided by Django Rest Framework that handles GET and POST for Pools
