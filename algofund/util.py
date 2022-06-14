@@ -28,80 +28,115 @@ class PendingTxnResponse:
         self.logs: List[bytes] = [b64decode(l) for l in response.get("logs", [])]
 
 
-def fullyCompileContract(client: AlgodClient, contract: Expr) -> bytes:
-    teal = compileTeal(contract, mode=Mode.Application, version=5)
-    response = client.compile(teal)
-    return b64decode(response["result"])
+class ContractUtils:
+    # Returns KMDCClient used to handle wallet requests
+    # The Key Management Daemon (kmd) is a low level wallet and key management tool
+    # https://developer.algorand.org/docs/clis/kmd/
 
+    @staticmethod
+    def keyManagement():
+        kmd_address = "http://localhost:4002"
+        kmd_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        kmd_client = kmd.KMDClient(kmd_token, kmd_address)
+        return kmd_client
 
-def waitForTransaction(
-    client: AlgodClient, txID: str, timeout: int = 10
-) -> PendingTxnResponse:
-    lastStatus = client.status()
-    lastRound = lastStatus["last-round"]
-    startRound = lastRound
+    # Returns Wallet
+    @staticmethod
+    def walletDetails():
+        wallet_name = "unencrypted-default-wallet"
+        password = ""
+        kmd_client = ContractUtils.keyManagement()
+        return Wallet(wallet_name, password, kmd_client)
 
-    while lastRound < startRound + timeout:
-        pending_txn = client.pending_transaction_info(txID)
+    # Retrieve accounts associated to wallet
+    @staticmethod
+    def getAddresses():
+        walletid = None
+        accountArray = []
 
-        if pending_txn.get("confirmed-round", 0) > 0:
-            return PendingTxnResponse(pending_txn)
+        wallet = ContractUtils.walletDetails()
 
-        if pending_txn["pool-error"]:
-            raise Exception("Pool error: {}".format(pending_txn["pool-error"]))
+        for key in wallet.list_keys():
+            walletid = wallet.kcl.list_wallets()[0].get("id")
 
-        lastStatus = client.status_after_block(lastRound + 1)
+            wallethandle = wallet.kcl.init_wallet_handle(walletid, "")
+            accountkey = wallet.kcl.export_key(wallethandle, "", key)
+            mn = mnemonic.from_private_key(accountkey)
+            account = Account.FromMnemonic(mn)
+            accountArray.append(account)
+            print("Account Mnemonic: ", mn)
 
-        lastRound += 1
+        return accountArray
 
-    raise Exception(
-        "Transaction {} not confirmed after {} rounds".format(txID, timeout)
-    )
+    # Return the escrow address of an application.
+    # Args: appID (int): The ID of the application.
+    # Returns: str: The address corresponding to that application's escrow account.
+    @staticmethod
+    def get_application_address(appID: int) -> str:
+        to_sign = constants.APPID_PREFIX + appID.to_bytes(8, "big")
+        checksum = encoding.checksum(to_sign)
+        return encoding.encode_address(checksum)
 
+    @staticmethod
+    def decodeState(stateArray: List[Any]) -> Dict[bytes, Union[int, bytes]]:
+        state: Dict[bytes, Union[int, bytes]] = dict()
 
-def key_management():
-    kmd_address = "http://localhost:4002"
-    kmd_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-    kmd_client = kmd.KMDClient(kmd_token, kmd_address)
-    return kmd_client
+        for pair in stateArray:
+            key = b64decode(pair["key"])
 
+            value = pair["value"]
+            valueType = value["type"]
 
-def wallet_details():
-    wallet_name = "unencrypted-default-wallet"
-    password = ""
-    kmd_client = key_management()
-    return Wallet(wallet_name, password, kmd_client)
+            if valueType == 2:
+                # value is uint64
+                value = value.get("uint", 0)
+            elif valueType == 1:
+                # value is byte array
+                value = b64decode(value.get("bytes", ""))
+            else:
+                raise Exception(f"Unexpected state type: {valueType}")
 
+            state[key] = value
 
-def testMnemonic():
-    walletid = None
-    accountArray = []
+        return state
 
-    wallet = wallet_details()
+    # Returns contract bytecode
+    @staticmethod
+    def fullyCompileContract(client: AlgodClient, contract: Expr) -> bytes:
+        teal = compileTeal(contract, mode=Mode.Application, version=5)
+        response = client.compile(teal)
+        return b64decode(response["result"])
 
-    for key in wallet.list_keys():
-        walletid = wallet.kcl.list_wallets()[0].get("id")
+    # Return pending transaction
+    @staticmethod
+    def waitForTransaction(
+        client: AlgodClient, txID: str, timeout: int = 10
+    ) -> PendingTxnResponse:
+        lastStatus = client.status()
+        lastRound = lastStatus["last-round"]
+        startRound = lastRound
 
-        wallethandle = wallet.kcl.init_wallet_handle(walletid, "")
-        accountkey = wallet.kcl.export_key(wallethandle, "", key)
-        mn = mnemonic.from_private_key(accountkey)
-        account = Account.FromMnemonic(mn)
-        accountArray.append(account)
-        print("Account Mnemonic: ", mn)
+        while lastRound < startRound + timeout:
+            pending_txn = client.pending_transaction_info(txID)
 
-    return accountArray
+            if pending_txn.get("confirmed-round", 0) > 0:
+                return PendingTxnResponse(pending_txn)
 
+            if pending_txn["pool-error"]:
+                raise Exception("Pool error: {}".format(pending_txn["pool-error"]))
 
-def get_application_address(appID: int) -> str:
-    """
-    Return the escrow address of an application.
+            lastStatus = client.status_after_block(lastRound + 1)
 
-    Args:
-        appID (int): The ID of the application.
+            lastRound += 1
 
-    Returns:
-        str: The address corresponding to that application's escrow account.
-    """
-    to_sign = constants.APPID_PREFIX + appID.to_bytes(8, "big")
-    checksum = encoding.checksum(to_sign)
-    return encoding.encode_address(checksum)
+        raise Exception(
+            "Transaction {} not confirmed after {} rounds".format(txID, timeout)
+        )
+
+    # Returns application state
+    @staticmethod
+    def getAppGlobalState(
+        client: AlgodClient, appID: int
+    ) -> Dict[bytes, Union[int, bytes]]:
+        appInfo = client.application_info(appID)
+        return ContractUtils.decodeState(appInfo["params"]["global-state"])

@@ -10,7 +10,13 @@ from pyteal import Txn, compileTeal, Mode
 
 from account import Account
 from contract import approval_program, clear_state_program
-from util import fullyCompileContract, testMnemonic, waitForTransaction, wallet_details
+from util import (
+    fullyCompileContract,
+    testMnemonic,
+    waitForTransaction,
+    wallet_details,
+    getAppGlobalState,
+)
 from datetime import date
 from algosdk.transaction import PaymentTxn
 
@@ -165,5 +171,8 @@ if __name__ == "__main__":
     # accnts = testMnemonic()
 
     # print(accnts)
-    # fundPool(client, user, 1000000)
-    withdrawFunds(client, user)
+    # address = get_application_address(33)
+    # fundPool(client, user, address, 10000666)
+    # withdrawFunds(client, user)
+    state = getAppGlobalState(client, 33)
+    print("")
