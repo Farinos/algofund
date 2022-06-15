@@ -1,5 +1,5 @@
 from account import Account
-from util import get_application_address
+from util import ContractUtils
 from operations import createDonationPool, fundPool
 from .apps import ApiConfig
 
@@ -14,6 +14,7 @@ from django.http import Http404
 from django.shortcuts import render
 
 from datetime import datetime
+from json import dump
 
 # Create api view with customizable json
 @api_view(['GET','POST'])
@@ -61,7 +62,7 @@ def pool_funds(request, pk):
         if serializer.is_valid():
             senderMnemonic = request.data['senderMnemonic']
             amount = int(request.data['amount'])
-            if fundPool(ApiConfig.client, Account.FromMnemonic(senderMnemonic), get_application_address(int(pool.applicationIndex)), amount) == None: return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            if fundPool(ApiConfig.client, Account.FromMnemonic(senderMnemonic), ContractUtils.get_application_address(int(pool.applicationIndex)), amount) == None: return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response(status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -78,6 +79,17 @@ def pool(request, pool_id):
     return render(request, "pools/pool.html", {
         "pool": pool
     })
+
+@api_view(['GET'])
+def addresses(request):
+    if request.method == 'GET':
+        addresses = [a.__dict__ for a in ContractUtils.getAddresses()]
+        print(addresses)
+        return Response(data=addresses, status=status.HTTP_200_OK)
+        #serializer = AccountSerializer(data=addresses, many=True)
+        #if serializer.is_valid():
+        #    return Response(data=serializer.data, status=status.HTTP_200_OK)
+        #return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # ONLY FOR TEST purposes
 # ModelViewSet is a special view provided by Django Rest Framework that handles GET and POST for Pools

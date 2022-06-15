@@ -63,8 +63,8 @@ class ContractUtils:
             accountkey = wallet.kcl.export_key(wallethandle, "", key)
             mn = mnemonic.from_private_key(accountkey)
             account = Account.FromMnemonic(mn)
+            account.mnemonic = account.getMnemonic()
             accountArray.append(account)
-            print("Account Mnemonic: ", mn)
 
         return accountArray
 

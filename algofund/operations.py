@@ -10,13 +10,7 @@ from pyteal import Txn, compileTeal, Mode
 
 from account import Account
 from contract import approval_program, clear_state_program
-from util import (
-    fullyCompileContract,
-    testMnemonic,
-    waitForTransaction,
-    wallet_details,
-    getAppGlobalState,
-)
+from util import ContractUtils
 from datetime import date
 from algosdk.transaction import PaymentTxn
 
@@ -38,8 +32,8 @@ def getContracts(client: AlgodClient) -> Tuple[bytes, bytes]:
     global CLEAR_STATE_PROGRAM
 
     if len(APPROVAL_PROGRAM) == 0:
-        APPROVAL_PROGRAM = fullyCompileContract(client, approval_program())
-        CLEAR_STATE_PROGRAM = fullyCompileContract(client, clear_state_program())
+        APPROVAL_PROGRAM = ContractUtils.fullyCompileContract(client, approval_program())
+        CLEAR_STATE_PROGRAM = ContractUtils.fullyCompileContract(client, clear_state_program())
 
     return APPROVAL_PROGRAM, CLEAR_STATE_PROGRAM
 
@@ -71,7 +65,7 @@ def createDonationPool(
 
     client.send_transaction(signedTxn)
 
-    response = waitForTransaction(client, signedTxn.get_txid())
+    response = ContractUtils.waitForTransaction(client, signedTxn.get_txid())
     assert response.applicationIndex is not None and response.applicationIndex > 0
     return response.applicationIndex
 
@@ -119,7 +113,7 @@ def withdrawFunds(client: AlgodClient, sender: Account):
     signedTxn = withdrawTxn.sign(sender.getPrivateKey())
     client.send_transaction(signedTxn)
 
-    waitForTransaction(client, signedTxn.get_txid())
+    ContractUtils.waitForTransaction(client, signedTxn.get_txid())
 
 
 # utility for waiting on a transaction confirmation
@@ -174,5 +168,5 @@ if __name__ == "__main__":
     # address = get_application_address(33)
     # fundPool(client, user, address, 10000666)
     # withdrawFunds(client, user)
-    state = getAppGlobalState(client, 33)
+    state = ContractUtils.getAppGlobalState(client, 33)
     print("")

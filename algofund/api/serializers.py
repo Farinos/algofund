@@ -1,4 +1,4 @@
-from attr import fields
+from account import Account
 from .models import Fund, Pool
 from rest_framework import serializers
 

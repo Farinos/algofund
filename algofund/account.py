@@ -1,7 +1,9 @@
+import json
 from algosdk import account, mnemonic
 
 class Account:
     """Represents a private key and address for an Algorand account"""
+    mnemonic: str
 
     def __init__(self, privateKey: str) -> None:
         self.sk = privateKey
