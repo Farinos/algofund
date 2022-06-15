@@ -84,13 +84,8 @@ def pool(request, pool_id):
 def addresses(request):
     if request.method == 'GET':
         addresses = [a.__dict__ for a in ContractUtils.getAddresses()]
-        print(addresses)
         return Response(data=addresses, status=status.HTTP_200_OK)
-        #serializer = AccountSerializer(data=addresses, many=True)
-        #if serializer.is_valid():
-        #    return Response(data=serializer.data, status=status.HTTP_200_OK)
-        #return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        
 # ONLY FOR TEST purposes
 # ModelViewSet is a special view provided by Django Rest Framework that handles GET and POST for Pools
 class PoolViewSet(viewsets.ModelViewSet):
