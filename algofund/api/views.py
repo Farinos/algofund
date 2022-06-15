@@ -61,7 +61,10 @@ def pool_funds(request, pk):
         serializer = FundSerializer(data=request.data)
         if serializer.is_valid():
             senderMnemonic = request.data['senderMnemonic']
-            amount = int(request.data['amount'])
+            try:    
+                amount = int(request.data['amount'])
+            except:
+                amount = request.data['amount']
             if fundPool(ApiConfig.client, Account.FromMnemonic(senderMnemonic), ContractUtils.get_application_address(int(pool.applicationIndex)), amount) == None: return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response(status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -77,7 +80,8 @@ def pool(request, pool_id):
     except Pool.DoesNotExist:
         raise Http404("Pool not found.")
     return render(request, "pools/pool.html", {
-        "pool": pool
+        "pool": pool,
+        "accounts": ContractUtils.getAddresses()
     })
 
 @api_view(['GET'])
@@ -85,7 +89,7 @@ def addresses(request):
     if request.method == 'GET':
         addresses = [a.__dict__ for a in ContractUtils.getAddresses()]
         return Response(data=addresses, status=status.HTTP_200_OK)
-        
+
 # ONLY FOR TEST purposes
 # ModelViewSet is a special view provided by Django Rest Framework that handles GET and POST for Pools
 class PoolViewSet(viewsets.ModelViewSet):

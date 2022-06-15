@@ -6,18 +6,30 @@
 </head>
 
 <body>
-    <h1>Pools</h1>
-    <ul>
-        {% for pool in pools %}
-        <li>
-            <a href="{% url 'pool' pool.id %}">
-                Pool {{ pool.id }}: {{ pool.applicationIndex}}
-            </a>
-            <div>image {{pool.image}}</div>
-            <img src="/media/{{pool.image}}"/>
-        </li>
-        {% endfor %}
-    </ul>
+    <h1>Pool {{ pool.id }} - {{ pool.name }}</h1>
+    <img src="/media/{{pool.image}}" />
+    <div>
+        <h3>Description</h3>
+        <p>{{ pool.description }}</p>
+    </div>
+    <div>
+        <h3>Expiry time</h3>
+        <p>{{ pool.expiryTime}}</p>
+    </div>
+    <form action="{% url 'funds' pool.id %}" method="post">
+        <h3>Send Fund to Pool</h3>
+        {% csrf_token %}
+        <label for="senderMnemonic">Sender:</label>
+        <select name="senderMnemonic">
+            {% for account in accounts %}
+                <option value="{{ account.mnemonic }}">{{ account.addr }}</option>
+            {% endfor %}
+        </select>
+        <label for="amount">Fund amount:</label>
+        <input type="number" name="amount" min="10000" >
+        <input type="submit">
+    </form>
+    <a href="{% url 'pools' %}">Back to Full List</a>
 </body>
 
 </html>

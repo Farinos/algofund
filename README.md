@@ -220,6 +220,27 @@ POST fund on pool `http://localhost:8000/pools/<id>/funds` with body:
 }
 ```
 
+GET all the addresses `http://localhost:8000/addresses/`, example of response:
+```json
+[
+    {
+        "sk": "troCXrBuEuV/ub6rPJBB8LQg9VO45fZOR098wu09G4JKnAKq/RnUGVeim1AGa8bRIT6w8DZn5tbzt+0JjbdiGA==",
+        "addr": "JKOAFKX5DHKBSV5CTNIAM26G2EQT5MHQGZT6NVXTW7WQTDNXMIMDJF2Z4U",
+        "mnemonic": "fine april congress twelve cave welcome slogan salt nice domain camp excuse door wool secret toss tell brush chicken chief swear sorry awkward above deposit"
+    },
+    {
+        "sk": "wVSfi3shgAkNbxTLFBeLjgrDx+MMiWHVXAdmO7K1Vlu0V2QjI5WSOPPpc8SBHCsutuOFiaHAf78rkd+b8f7+7w==",
+        "addr": "WRLWIIZDSWJDR47JOPCICHBLF23OHBMJUHAH7PZLSHPZX4P673XQ76G3YA",
+        "mnemonic": "oblige later shift bless able draw journey behave offer fox easily pottery maid vehicle grow math promote infant admit reopen good pulp survey able into"
+    },
+    {
+        "sk": "GUCj+1JEyYpPknHpHp+9I9vswFXxplwC7w5XfMK4XlHbSa984raq3ddu9CNgW275MDQoscUcknCGnlRMkd0ZFg==",
+        "addr": "3NE267HCW2VN3V3O6QRWAW3O7EYDIKFRYUOJE4EGTZKEZEO5DELE2MG4WE",
+        "mnemonic": "add minimum lava early myth tired mystery immense tag ladder tell rate super ice melt plunge entire rose manual shell lumber purchase memory able act"
+    }
+]
+```
+
 Address -> mnemonic
 ```
 JKOAFKX5DHKBSV5CTNIAM26G2EQT5MHQGZT6NVXTW7WQTDNXMIMDJF2Z4U -> "fine april congress twelve cave welcome slogan salt nice domain camp excuse door wool secret toss tell brush chicken chief swear sorry awkward above deposit"
