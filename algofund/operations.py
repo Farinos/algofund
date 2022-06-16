@@ -101,10 +101,10 @@ def fundPool(client: AlgodClient, sender: Account, contractAddr: str, amount: in
         return None
 
 
-def withdrawFunds(client: AlgodClient, sender: Account):
+def withdrawFunds(client: AlgodClient, applicationIndex: int, sender: Account) -> bool:
     withdrawTxn = transaction.ApplicationCallTxn(
         sender=sender.getAddress(),
-        index=app_id,
+        index=applicationIndex,
         on_complete=transaction.OnComplete.NoOpOC,
         app_args=[b"withdraw"],
         sp=client.suggested_params(),
@@ -113,7 +113,11 @@ def withdrawFunds(client: AlgodClient, sender: Account):
     signedTxn = withdrawTxn.sign(sender.getPrivateKey())
     client.send_transaction(signedTxn)
 
-    ContractUtils.waitForTransaction(client, signedTxn.get_txid())
+    try:
+        ContractUtils.waitForTransaction(client, signedTxn.get_txid())
+        return True
+    except:
+        return False
 
 
 # utility for waiting on a transaction confirmation

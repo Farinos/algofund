@@ -1,5 +1,5 @@
 from account import Account
-from .models import Fund, Pool
+from .models import Fund, FundWithdraw, Pool
 from rest_framework import serializers
 
 class PoolSerializer(serializers.HyperlinkedModelSerializer):
@@ -11,3 +11,8 @@ class FundSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Fund
         fields = ('senderMnemonic', 'amount')
+
+class FundWithdrawSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = FundWithdraw
+        fields = ('requesterMnemonic',)

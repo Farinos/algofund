@@ -210,6 +210,13 @@ POST pool `http://localhost:8000/pools/` with body:
 }
 ```
 
+POST withdraw funds from pool `http://localhost:8000/pools/<id>/withdraw` with body:
+```json
+{
+    "requesterMnemonic": "fine april congress twelve cave welcome slogan salt nice domain camp excuse door wool secret toss tell brush chicken chief swear sorry awkward above deposit"
+}
+```
+
 POST fund on pool `http://localhost:8000/pools/<id>/funds` with body:
 ```json
 {

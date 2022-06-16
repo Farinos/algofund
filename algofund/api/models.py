@@ -21,3 +21,7 @@ class Fund(models.Model):
     '''Class representing funding for a pool'''
     senderMnemonic = models.CharField(max_length=200)
     amount = models.IntegerField(default=100)
+
+class FundWithdraw(models.Model):
+    '''Class containing mnemonic of the user who want to withdraw funds from a pool'''
+    requesterMnemonic = models.CharField(max_length=200)

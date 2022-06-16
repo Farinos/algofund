@@ -1,9 +1,9 @@
 from account import Account
 from util import ContractUtils
-from operations import createDonationPool, fundPool
+from operations import createDonationPool, fundPool, withdrawFunds
 from .apps import ApiConfig
 
-from .serializers import FundSerializer, PoolSerializer
+from .serializers import FundSerializer, FundWithdrawSerializer, PoolSerializer
 from .models import Pool
 from rest_framework import viewsets
 from rest_framework import status
@@ -58,7 +58,6 @@ def pool_funds(request, pk):
         pool = Pool.objects.get(pk=pk)
     except Pool.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    
     if request.method == 'POST':
         serializer = FundSerializer(data=request.data)
         if serializer.is_valid():
@@ -69,6 +68,22 @@ def pool_funds(request, pk):
                 amount = request.data['amount']
             if fundPool(ApiConfig.client, Account.FromMnemonic(senderMnemonic), ContractUtils.get_application_address(int(pool.applicationIndex)), amount) == None: return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response(status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def pool_withdraw(request, pk):
+    pool: Pool
+    try:
+        pool = Pool.objects.get(pk=pk)
+    except Pool.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'POST':
+        serializer = FundWithdrawSerializer(data=request.data)
+        if serializer.is_valid():
+            if withdrawFunds(ApiConfig.client, pool.applicationIndex, Account.FromMnemonic(request.data['requesterMnemonic'])):
+                return Response(data={'message': 'Withdraw completed'}, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def pools(request):
