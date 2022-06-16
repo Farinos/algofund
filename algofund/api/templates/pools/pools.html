@@ -18,6 +18,27 @@
         </li>
         {% endfor %}
     </ul>
+
+    <h1>Add new pool</h1>
+    <form action="{% url 'pools_api' %}" method="post">
+        <h3>New pool information</h3>
+        {% csrf_token %}
+        <label for="creatorMnemonic">Pool Creator:</label>
+        <select name="creatorMnemonic">
+            {% for account in accounts %}
+                <option value="{{ account.mnemonic }}">{{ account.addr }}</option>
+            {% endfor %}
+        </select>
+        <label for="name">Pool name:</label>
+        <input type="text" name="name">
+        <label for="description">Pool description:</label>
+        <input type="area" name="description">
+        <label for="minAmount">Minimum amount to retrieve pool funds:</label>
+        <input type="number" name="minAmount" >
+        <label for="expiryTime">Expiry time of the pool:</label>
+        <input type="date" name="expiryTime">
+        <input type="submit">
+    </form>
 </body>
 
 </html>

@@ -202,13 +202,11 @@ GET data of a single pool by primary key (id) `http://localhost:8000/pools/<id>`
 POST pool `http://localhost:8000/pools/` with body:
 ```json
 {
-    "name": "test11",
-    "description": "fedwsfwfew",
-    "applicationIndex": "23232543453453453452",
+    "name": "test33",
+    "description": "JOE DESCRIPTION",
     "minAmount": 300,
     "expiryTime": "2022-06-23",
-    "creatorMnemonic": "fine april congress twelve cave welcome slogan salt nice domain camp excuse door wool secret toss tell brush chicken chief swear sorry awkward above deposit",
-    "image": "base64encoded image"
+    "creatorMnemonic": "fine april congress twelve cave welcome slogan salt nice domain camp excuse door wool secret toss tell brush chicken chief swear sorry awkward above deposit"
 }
 ```
 

@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from django.http import Http404
+from django.http import Http404, QueryDict
 from django.shortcuts import render
 
 from datetime import datetime
@@ -27,8 +27,10 @@ def list_pool(request):
     if request.method == 'POST':
         serializer = PoolSerializer(data=request.data)
         mnemonic = request.data['creatorMnemonic']
+        print(request.data)
         if serializer.is_valid():
             poolData = request.data
+            if isinstance(poolData, QueryDict) and not poolData._mutable: poolData._mutable = True
             expiryTimestamp = int(datetime.strptime(poolData['expiryTime'], '%Y-%m-%d').timestamp())
             smartContractAddr = createDonationPool(ApiConfig.client, Account.FromMnemonic(mnemonic), poolData['minAmount'], expiryTimestamp)
             poolData['applicationIndex'] = smartContractAddr
@@ -71,7 +73,8 @@ def pool_funds(request, pk):
 
 def pools(request):
     return render(request, "pools/pools.html", {
-        "pools": Pool.objects.all()
+        "pools": Pool.objects.all(),
+        "accounts": ContractUtils.getAddresses()
     })
 
 def pool(request, pool_id):

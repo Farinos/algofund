@@ -16,7 +16,7 @@
         <h3>Expiry time</h3>
         <p>{{ pool.expiryTime}}</p>
     </div>
-    <form action="{% url 'funds' pool.id %}" method="post">
+    <form action="{% url 'funds_api' pool.id %}" method="post">
         <h3>Send Fund to Pool</h3>
         {% csrf_token %}
         <label for="senderMnemonic">Sender:</label>
@@ -26,7 +26,7 @@
             {% endfor %}
         </select>
         <label for="amount">Fund amount:</label>
-        <input type="number" name="amount" min="10000" >
+        <input type="number" name="amount" min="100000">
         <input type="submit">
     </form>
     <a href="{% url 'pools' %}">Back to Full List</a>
