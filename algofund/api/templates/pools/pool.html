@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <h1>Pool {{ pool.id }} - {{ pool.name }}</h1>
+    <h1>Pool with AppId {{ pool.applicationIndex }} - {{ pool.name }}</h1>
     <img src="/media/{{pool.image}}" />
     <div>
         <h3>Description</h3>
@@ -27,6 +27,17 @@
         </select>
         <label for="amount">Fund amount:</label>
         <input type="number" name="amount" min="100000">
+        <input type="submit">
+    </form>
+    <form action="{% url 'withdraw_api' pool.id %}" method="post">
+        <h3>Withdraw Pool funds</h3>
+        {% csrf_token %}
+        <label for="requesterMnemonic">User who wants to retrieve funds:</label>
+        <select name="requesterMnemonic">
+            {% for account in accounts %}
+                <option value="{{ account.mnemonic }}">{{ account.addr }}</option>
+            {% endfor %}
+        </select>
         <input type="submit">
     </form>
     <a href="{% url 'pools' %}">Back to Full List</a>
