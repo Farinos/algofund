@@ -206,7 +206,8 @@ POST pool `http://localhost:8000/pools/` with body:
     "description": "JOE DESCRIPTION",
     "minAmount": 300,
     "expiryTime": "2022-06-23",
-    "creatorMnemonic": "fine april congress twelve cave welcome slogan salt nice domain camp excuse door wool secret toss tell brush chicken chief swear sorry awkward above deposit"
+    "creatorMnemonic": "fine april congress twelve cave welcome slogan salt nice domain camp excuse door wool secret toss tell brush chicken chief swear sorry awkward above deposit",
+    "image": "base64encodedimage"
 }
 ```
 
