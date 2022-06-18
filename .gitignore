@@ -2,3 +2,4 @@ algofund-venv
 __pycache__
 .vscode
 venv
+algofund/db.sqlite3

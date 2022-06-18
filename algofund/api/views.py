@@ -14,7 +14,6 @@ from django.http import Http404, QueryDict
 from django.shortcuts import render
 
 from datetime import datetime
-from json import dump
 
 # Create api view with customizable json
 @api_view(['GET','POST'])

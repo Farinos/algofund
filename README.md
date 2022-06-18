@@ -1,8 +1,24 @@
-donation-contract
+---
+title: "4blockz project work presentation"
+author: Mattia De Vivo
+date: 18/06/2022
+---
 
-# Algofund API
+Titolo: Project Work di Algorand1
 
-## Setup
+Team: 4blockz
+
+Membri:
+- Alessandro Farina
+- Mattia De Vivo
+- Giuseppe Cristillo
+- Simone Piscitelli
+
+# Algofund
+
+Crowdfunding platform using Algorand.
+
+## Usage
 
 Clone sandbox node repository:
 `git clone https://github.com/algorand/sandbox.git`
@@ -11,32 +27,33 @@ Switch directory:
 Execute sandbox containers with private network with following command:
 `./sandbox up dev`
 
-## Usage
-
+Go to the main directory of this project(where this README.md file is stored) and then follow the steps:
 - create your venv named **algofund-venv** `python -m venv algofund-venv`
 - activate your venv with `source algofund-venv/bin/activate`
 - install all the project dependencies with `pip install -r requirements.txt`
 - go to algofund directory `cd algofund`
+- create migrations `python manage.py migrate`
 - run the server `python manage.py runserver`
+- backend url is `http://127.0.0.1:8000/`
+
+To see documentation about REST API use `swagger.yaml` file in the root directory of the project.
+
+There is a simple Django frontend composed of two pages (made by backend devs):
+- `http://127.0.0.1:8000/views/pools` list of pools and add new pool
+- `http://127.0.0.1:8000/views/pools/<id>` see pool details and withdraw pool funds 
+
 
 Admin info:
 ```
-Admin portal at /admin
+Admin portal at `http://127.0.0.1:8000/admin/login/?next=/admin/`
 username: admin
 password: admin
 email: admin@api.com
 ```
 
-# Smart Contract
+# Develpoment information
 
-Per creare il portafogli bisogna inserire 25 parole per poi andare a creare la private key
-
-- withdraw si fa innescando una noop mandando come parametro una "withdraw"
-- creazione contratto maandare 0
-- `applicationIndex` è id dello smart contract e serve per sapere id del contratto su cui andare a deployare i dati, anche per fare il widthraw ecc
-- `fundPool` è una transazione esterna al contratto che prende le info del sender, retrieve del address del receiver ed invia i dati
-
-# Python venv
+## Python venv
 
 - to create a Python venv use the command `python -m venv <name-of-venv>` where `-m` indicates to Python to execute *venv* module as a script
 - to activate a *venv* you need to use the `source <name-of-venv>/bin/activate` command
@@ -47,7 +64,7 @@ Per creare il portafogli bisogna inserire 25 parole per poi andare a creare la p
 - after you activated the *venv* you can install all the dependencies with `pip install -r requirements.txt`
 - **requirements.txt** is the file containing all the project dependencies, you can generate the file by running the command `pip freeze > requirements.txt`
 
-# Django
+## Django
 
 [Guide](https://medium.com/swlh/build-your-first-rest-api-with-django-rest-framework-e394e39a482c)
 
@@ -66,7 +83,7 @@ INSTALLED_APPS = [
 - whenever we make changes or define a new model we need to tell Django to migrate those changes `python manage.py makemigrations && python manage.py migrate`
 - remember to register models you want to manage with **admin account** inside *admin.py* file
 
-# Django REST framework
+## Django REST framework
 
 Now we want to serialize data from our database via endpoints:
 - install Django REST framework `pip install djangorestframework`
@@ -81,12 +98,6 @@ INSTALLED_APPS = [
 - create a serializer class inside `api/views.py` file
 - `router` imported from `rest_framework` is responsible of dinamically routing requests to the right resource in a dinamic way, so if we add or delete items from the db the URLs will update to match. A router works with a `viewset` to dinamically route requests.
 
-# FINAL PRESENTATION
-
-- struttura del progetto
-- webapp e tutto in localhost
-- README.md
-- 1 smart contract per ogni pool
 
 # TEST
 
@@ -247,14 +258,7 @@ GET all the addresses `http://localhost:8000/addresses/`, example of response:
 ]
 ```
 
-Address -> mnemonic
-```
-JKOAFKX5DHKBSV5CTNIAM26G2EQT5MHQGZT6NVXTW7WQTDNXMIMDJF2Z4U -> "fine april congress twelve cave welcome slogan salt nice domain camp excuse door wool secret toss tell brush chicken chief swear sorry awkward above deposit"
-
-WRLWIIZDSWJDR47JOPCICHBLF23OHBMJUHAH7PZLSHPZX4P673XQ76G3YA -> "oblige later shift bless able draw journey behave offer fox easily pottery maid vehicle grow math promote infant admit reopen good pulp survey able into"
-```
-
-# Algorand commands
+## Algorand sandbox commands
 
 ```shell
 ./sandbox up dev # start Algorand containers with dev data
