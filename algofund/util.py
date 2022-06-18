@@ -1,3 +1,4 @@
+from tokenize import String
 from typing import List, Tuple, Dict, Any, Optional, Union
 from base64 import b64decode
 
@@ -140,3 +141,9 @@ class ContractUtils:
     ) -> Dict[bytes, Union[int, bytes]]:
         appInfo = client.application_info(appID)
         return ContractUtils.decodeState(appInfo["params"]["global-state"])
+
+    @staticmethod
+    def getAddressAmount(
+        client: AlgodClient, address: String
+    ) -> Dict[bytes, Union[int, bytes]]:
+        return client.account_info(address)["amount"]
