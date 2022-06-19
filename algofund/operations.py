@@ -32,8 +32,12 @@ def getContracts(client: AlgodClient) -> Tuple[bytes, bytes]:
     global CLEAR_STATE_PROGRAM
 
     if len(APPROVAL_PROGRAM) == 0:
-        APPROVAL_PROGRAM = ContractUtils.fullyCompileContract(client, approval_program())
-        CLEAR_STATE_PROGRAM = ContractUtils.fullyCompileContract(client, clear_state_program())
+        APPROVAL_PROGRAM = ContractUtils.fullyCompileContract(
+            client, approval_program()
+        )
+        CLEAR_STATE_PROGRAM = ContractUtils.fullyCompileContract(
+            client, clear_state_program()
+        )
 
     return APPROVAL_PROGRAM, CLEAR_STATE_PROGRAM
 
@@ -169,8 +173,8 @@ if __name__ == "__main__":
     # accnts = testMnemonic()
 
     # print(accnts)
-    # address = get_application_address(33)
+    address = get_application_address(1)
     # fundPool(client, user, address, 10000666)
     # withdrawFunds(client, user)
-    state = ContractUtils.getAppGlobalState(client, 33)
+    # state = ContractUtils.getAppGlobalState(client, 1)
     print("")
