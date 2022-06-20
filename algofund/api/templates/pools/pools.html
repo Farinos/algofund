@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Crowdfunging pools</title>
+</head>
+
+<body>
+    <section id="pools">
+        <div class="container" data-aos="fade-up">
+
+            <header class="section-header">
+                <h2>Pools</h2>
+                <p>The full list of available pool</p>
+            </header>
+
+            <div class="row gy-4">
+                {% for pool in pools %}
+                <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
+                    <div class="member">
+                        <div class="member-img">
+                            <img src="/media/{{pool.image}}" class="img-fluid" alt="">
+                        </div>
+                        <div class="member-info">
+                            <a href="{% url 'pool' pool.id %}">
+                                Id: {{pool.id}}
+                            </a>
+                            <h4>AlgorandAppId: {{pool.applicationIndex}}</h4>
+                            <p>{{pool.description}}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+
+    </section>
+    <div class="container">
+        <header class="section-header">
+            <h2>Add new pool</h2>
+            <p>Provide all the necessary information to create a new pool</p>
+        </header>
+        <form action="{% url 'pools_api' %}" method="post">
+            {% csrf_token %}
+            <label for="creatorMnemonic">Pool Creator:</label>
+            <select name="creatorMnemonic">
+                {% for account in accounts %}
+                <option value="{{ account.mnemonic }}">{{ account.addr }}</option>
+                {% endfor %}
+            </select>
+            <label for="name">Pool name:</label>
+            <input type="text" name="name">
+            <label for="description">Pool description:</label>
+            <input type="area" name="description">
+            <label for="minAmount">Minimum amount to retrieve pool funds:</label>
+            <input type="number" name="minAmount">
+            <label for="expiryTime">Expiry time of the pool:</label>
+            <input type="date" name="expiryTime">
+            <label for="image">Bae64 encoded image:</label>
+            <input type="text" name="image">
+            <input type="submit">
+        </form>
+    </div>
+
+</body>
+
+</html>

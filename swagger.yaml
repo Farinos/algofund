@@ -1,0 +1,225 @@
+swagger: "2.0"
+info:
+  description: "This is a sample backend server providing REST API used as interface to execute operations on Algorand blockchain. They are used in our crowdfunding application."
+  version: "1.0.0"
+  title: "Swagger Petstore"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:8000"
+basePath: "/"
+tags:
+- name: "pools"
+  description: "Everythung about pool"
+- name: "addresses"
+  description: "Everythung about user addresses"
+schemes:
+- "http"
+paths:
+  /pools:
+    get:
+      tags:
+      - "pools"
+      summary: "Retrieve the list of exisitng pools"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Pool object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Pools"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Pools"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "pools"
+      summary: "Create a new pool"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Pool object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/PostPool"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Pools"
+        "400":
+          description: "Bad request"
+  /pools/{poolId}:
+    get:
+      tags:
+      - "pools"
+      summary: "Find pools by ID"
+      description: "Returns a single pool"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "poolId"
+        in: "path"
+        description: "ID of pool to return"
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Pools"
+        "404":
+          description: "Pool not found"
+  /pools/{poolId}/funds:
+    post:
+      tags:
+      - "pools"
+      summary: "Insert new fund to the pool with the given Id"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "poolId"
+        in: "path"
+        description: "ID of pool"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Fund object that needs to be added to the pool"
+        required: true
+        schema:
+          $ref: "#/definitions/PostFund"
+      responses:
+        "200":
+          description: "successful operation"
+        "400":
+          description: "Bad request"
+        "404":
+          description: "Pool not found"
+        "500":
+          description: "Internal server error"
+  /pools/{poolId}/withdraw:
+    post:
+      tags:
+      - "pools"
+      summary: "Withdraw funds from to the pool with the given Id"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "poolId"
+        in: "path"
+        description: "ID of pool"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Object containing the mnemonic phrase of the user who wants to retrieve funds"
+        required: true
+        schema:
+          $ref: "#/definitions/PostWithdraw"
+      responses:
+        "200":
+          description: "successful operation"
+        "400":
+          description: "Bad request"
+        "404":
+          description: "Pool not found"
+        "500":
+          description: "Internal server error"
+  /addresses:
+    get:
+      tags:
+      - "addresses"
+      summary: "Retrieve the list of exisitng addresses"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Addresses"
+definitions:
+  Pools:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+      description:
+        type: "string"
+      applicationIndex: 
+        type: "string"
+        format: "integer"
+      minAmount:
+        type: "integer"
+      expiryTime: 
+        type: "string"
+        format: "date-time"
+      image: 
+        type: "string"
+  PostPool:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      description:
+        type: "string"
+      minAmount:
+        type: "integer"
+      expiryTime: 
+        type: "string"
+        format: "date-time"
+      creatorMnemonic:
+        type: "string"
+      image: 
+        type: "string"
+        format: "base64"
+  PostFund:
+    type: "object"
+    properties:
+      senderMnemonic:
+        type: "string"
+      amount:
+        type: "string"
+        format: "integer"
+  PostWithdraw:
+    type: "object"
+    properties:
+      requesterMnemonic:
+        type: "string"
+  Addresses:
+    type: "object"
+    properties:
+      sk:
+        type: "string"
+      addr:
+        type: "string"
+      mnemonic:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
