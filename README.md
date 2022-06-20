@@ -38,11 +38,7 @@ Go to the main directory of this project(where this README.md file is stored) an
 
 To see documentation about REST API use `swagger.yaml` file in the root directory of the project.
 
-There is a simple Django frontend composed of two pages (made by backend devs):
-- `http://127.0.0.1:8000/views/pools` list of pools and add new pool
-- `http://127.0.0.1:8000/views/pools/<id>` see pool details and withdraw pool funds 
-
-An alternative frontend build with Flutter (by backend dev) is in `algofund/web` folder:
+Web frontend built with Flutter (by backend dev) is in `algofund/web` folder:
 - `cd web`
 - `python -m http.server 8080`
 - go to your browser at `http://localhost:8080`
